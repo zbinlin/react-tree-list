@@ -1,0 +1,75 @@
+.root {
+    color: red;
+}
+
+.subtree {
+    display: none;
+}
+.expanded > .subtree {
+    display: block;
+}
+
+.label {
+    padding: 0.5rem;
+}
+.selected > .label {
+    color: red;
+    background: #efe;
+}
+
+.expand-btn {
+    cursor: pointer;
+    padding-left: 0.5rem;
+    margin-left: -0.5rem;
+    padding-right: 0.4rem;
+}
+.expand-btn:hover {
+    text-decoration: none;
+}
+.expand-btn > span {
+}
+
+.text {
+    cursor: default;
+}
+
+.extral {
+    display: none;
+}
+.label:hover > .extral {
+    display: block;
+}
+.extral > a {
+    cursor: pointer;
+}
+
+.label {
+    color: green;
+}
+
+.subtree {
+}
+
+.append-before::before {
+    content: "";
+    outline: 2px solid red;
+    width: 100%;
+    height: 0;
+    display: block;
+    position: relative;
+    top: -0.5rem;
+}
+
+.append-current {
+    outline: 2px solid red;
+}
+
+.append-after::after {
+    content: "";
+    outline: 2px solid red;
+    width: 100%;
+    height: 0;
+    display: block;
+    position: relative;
+    bottom: -0.5rem;
+}
