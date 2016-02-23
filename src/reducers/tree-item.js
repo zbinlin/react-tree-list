@@ -111,7 +111,7 @@ export default function tree(state = {
         {id: 1, name: "foo", value: "foo"},
         {id: 2, name: "bar", value: "bar", parentId: 1},
         {id: 3, name: "bob", value: "bob", parentId: 2},
-        {id: 4, name: "alice", value: "bob", parentId: 1},
+        {id: 4, name: "alice", value: "alice", parentId: 1},
     ],
 }, action) {
     switch (action.type) {

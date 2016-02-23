@@ -51,7 +51,7 @@ class TreeItem extends Component {
         this.props.treeOp.select(this.props.id);
     }
     render() {
-        let { text, children, expanded = false, selected = false, level = 0,
+        let { text, children, expanded = false, selected = false, level = 0, id,
               connectDragSource, connectDropTarget, isDragging, insert, isOver,
               ...props } = this.props;
         let classSet = {
@@ -60,9 +60,9 @@ class TreeItem extends Component {
             expanded: !!expanded,
             selected: !!selected,
         };
-        return (
-            <div {...props} className={cx(classSet)} role="treeitem">
-                {connectDropTarget(connectDragSource(
+        return connectDropTarget(
+            <div {...props} className={cx(classSet)} role="treeitem" data-id={id}>
+                {connectDragSource(
                     <div style={{paddingLeft: `${level * 2 + 0.5}rem`, opacity: isDragging ? 0.5 : 1}}
                          className={cx("label", isOver && insert ? `append-${insert}` : "")} onClick={this.handleSelect.bind(this)}>
                         {children ?
@@ -86,7 +86,7 @@ class TreeItem extends Component {
                             </a>
                         </div>
                     </div>
-                ))}
+                )}
                 {children ? <div className={cx("subtree")}>{children}</div> : null}
             </div>
         );
@@ -113,15 +113,17 @@ TreeItem.propTypes = {
     connectDragSource: PropTypes.func.isRequired,
     connectDropTarget: PropTypes.func.isRequired,
     isDragging: PropTypes.bool.isRequired,
+    isOver: PropTypes.bool.isRequired,
 };
 
 
 const DND_TYPE = "TREE_ITEM";
 
 let dragSourceSpec = {
-    beginDrag(props, monitor) {
+    beginDrag(props, monitor, cmpt) {
         return {
             id: props.id,
+            el: findDOMNode(cmpt),
         };
     },
     endDrag(props, monitor) {
@@ -139,7 +141,14 @@ let dropTargetSpec = {
         if (props.id === id) {
             return;
         }
-        let rect = findDOMNode(cmpt).getBoundingClientRect();
+        let target = findDOMNode(cmpt);
+        if (monitor.getItem().el.contains(target)) {
+            return;
+        }
+        if (!monitor.isOver({shallow: true})) {
+            return;
+        }
+        let rect = target.getBoundingClientRect();
         let hoverTop = rect.top + rect.height / 4;
         let hoverBottom = rect.bottom - rect.height / 4;
         let clientY = monitor.getClientOffset().y;
@@ -158,6 +167,9 @@ let dropTargetSpec = {
         }
     },
     drop(props, monitor, cmpt) {
+        if (!monitor.isOver({shallow: true})) {
+            return;
+        }
         let pos;
         switch (cmpt.state.insert) {
             case "before":
