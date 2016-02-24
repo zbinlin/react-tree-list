@@ -54,6 +54,9 @@ module.exports = {
         extensions: ["", ".webpack.js", ".web.js", ".js", ".jsx"],
     },
     plugins: [
+        new webpack.DefinePlugin({
+            "process.env.NODE_ENV": `"${process.env.NODE_ENV}"`,
+        }),
         new webpack.ProvidePlugin({
             $: "jquery",
             jQuery: "jquery",
