@@ -24,28 +24,71 @@ class TreeItem extends Component {
     handleAdd(evt) {
         evt.stopPropagation();
         evt.preventDefault();
-        let id = this.props.id;
-        let name = window.prompt("Please Enter Item Name:");
-        if (name) {
-            this.props.treeOp.add(name, id);
-        }
+        let parentId = this.props.id;
+        let name = "";
+        let onChange = (evt) => {
+            name = evt.target.value;
+        };
+        this.props.dialog.show({
+            type: "prompt",
+            header: (
+                <h3 style={{marginBottom: 0}}>添加</h3>
+            ),
+            body: (
+                <div className="form-group">
+                    <label htmlFor="xxx-form-ipt-add">请输入名称：</label>
+                    <input id="xxx-form-ipt-add" autoFocus className="form-control" defaultValue={name} onChange={onChange} />
+                </div>
+            ),
+            onConfirm: () => {
+                if (!name) return;
+                this.props.treeOp.add(name, parentId);
+            },
+        });
     }
     handleChange(evt) {
         evt.stopPropagation();
         evt.preventDefault();
         let { id, text: oldName } = this.props;
-        let name = window.prompt("Change The Value:", oldName);
-        if (name && name !== oldName) {
-            this.props.treeOp.change(id, name);
-        }
+        let name = "";
+        let onChange = (evt) => {
+            name = evt.target.value;
+        };
+        this.props.dialog.show({
+            type: "prompt",
+            header: (
+                <h3 style={{marginBottom: 0}}>修改</h3>
+            ),
+            body: (
+                <div className="form-group">
+                    <label htmlFor="xxx-form-ipt-change">请输入新的名称：</label>
+                    <input id="xxx-form-ipt-change" autoFocus className="form-control" defaultValue={oldName} onChange={onChange} />
+                </div>
+            ),
+            onConfirm: () => {
+                if (!name || name === oldName) return;
+                this.props.treeOp.change(id, name);
+            },
+        });
     }
     handleDelete(evt) {
         evt.stopPropagation();
         evt.preventDefault();
         let id = this.props.id;
-        if (window.confirm("Do You Delete This Item:")) {
-            this.props.treeOp.del(id);
-        }
+        this.props.dialog.show({
+            type: "confirm",
+            header: (
+                <h3 style={{marginBottom: 0}}>删除</h3>
+            ),
+            body: (
+                <div>
+                    <p>确定删除 »{this.props.text}« 吗？</p>
+                </div>
+            ),
+            onConfirm: () => {
+                this.props.treeOp.del(id);
+            },
+        });
     }
     handleSelect(evt) {
         this.props.treeOp.select(this.props.id);
@@ -96,7 +139,6 @@ class TreeItem extends Component {
 TreeItem.propTypes = {
     id: PropTypes.number.isRequired,
     text: PropTypes.string.isRequired,
-    value: PropTypes.string.isRequired,
     children: PropTypes.element,
     expanded: PropTypes.bool,
     selected: PropTypes.bool,
@@ -109,6 +151,10 @@ TreeItem.propTypes = {
         collapse: PropTypes.func.isRequired,
     }).isRequired,
     level: PropTypes.number,
+    dialog: PropTypes.shape({
+        show: PropTypes.func.isRequired,
+        close: PropTypes.func.isRequired,
+    }).isRequired,
 
     connectDragSource: PropTypes.func.isRequired,
     connectDropTarget: PropTypes.func.isRequired,

@@ -13,8 +13,45 @@ import * as utils from "../../libs/utils";
 
 import Tree from "../../components/tree";
 import Select from "../../components/select";
+import Dialog from "../../components/dialog";
 
 class Root extends Component {
+    constructor(...args) {
+        super(...args);
+        this.state = {
+            dialog: {
+                open: false,
+                type: "message",
+                header: null,
+                body: null,
+                footer: null,
+                isShowCloseButton: true,
+                onClose: () => {
+                    this.close();
+                },
+            },
+        };
+    }
+    show(dialog = {}) {
+        let oldDialog = this.state.dialog;
+        this.setState({
+            dialog: Object.assign({}, oldDialog, dialog, {
+                open: true,
+                onClose: (...args) => {
+                    this.close();
+                    return dialog.onClose && dialog.onClose(...args);
+                },
+            }),
+        });
+    }
+    close(dialog = {}) {
+        let oldDialog = this.state.dialog;
+        this.setState({
+            dialog: Object.assign({}, oldDialog, dialog, {
+                open: false,
+            }),
+        });
+    }
     render() {
         let data = utils.nest(this.props.treeContents);
         let select = this.props.treeOp.select;
@@ -50,6 +87,10 @@ class Root extends Component {
                 selectedItem = ary.filter(item => item.id === parentId)[0];
             }
         }
+        let dialog = {
+            show: this.show.bind(this),
+            close: this.close.bind(this),
+        };
         return (
             <div className="container">
                 <div className="center-block" style={{ maxWidth: "50%", paddingTop: "3rem" }}>
@@ -65,9 +106,10 @@ class Root extends Component {
                         })
                     }</div>
                     <div style={{marginTop: "0.5rem"}}>
-                        <Tree data={data} treeOp={this.props.treeOp} />
+                        <Tree data={data} treeOp={this.props.treeOp} dialog={dialog} />
                     </div>
                 </div>
+                <Dialog {...this.state.dialog} />
             </div>
         );
     }

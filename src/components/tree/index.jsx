@@ -9,7 +9,7 @@ const cx = classnames.bind(styles);
 
 export default class Tree extends Component {
     render() {
-        let { data, treeOp, level = 0 } = this.props;
+        let { data, treeOp, level = 0, ...props } = this.props;
         let trees = data.map((item, idx) => {
             return (
                 <TreeItem key={idx} id={item.id} value={item.value} text={item.name}
@@ -17,6 +17,7 @@ export default class Tree extends Component {
                     selected={item.selected}
                     expanded={item.expanded}
                     treeOp={treeOp}
+                    {...props}
                     children={item.__children__ ? <Tree {...this.props} level={level + 1} data={item.__children__} /> : null} />
             );
         });
